@@ -75,17 +75,19 @@ func (this *ConsistentHashImp)Add(serverList []ServerNode) {
 	}
 
 	this.sortHashCircleByCryptoKey()
-	//fmt.Print(sort.IsSorted(this.Wrapper))
-	//fmt.Print(this.Wrapper.HashCircle)
 }
 
 
 func (this *ConsistentHashImp)Get(key string) (*ServerNode) {
 	cryptoKey := crc64.Checksum([]byte(key), crc64.MakeTable(crc64.ECMA))
 
-	for _, item := range this.Wrapper.HashCircle {
+	for index, item := range this.Wrapper.HashCircle {
 		if item.Key > cryptoKey {
 			return &item.Node
+		}
+
+		if index == len(this.Wrapper.HashCircle) -1 {
+			return &this.Wrapper.HashCircle[0].Node
 		}
 	}
 	return nil
